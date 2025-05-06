@@ -8,7 +8,7 @@ The basic function of this repo is to ensure that all the code for interacting w
 
 ## I don't want to install anything
 
-Although it is strongly recommended to download this repository and build the Python environment if you wish to use or adapt the code hosted here, if you don't want to install or download anything then the simplest way to use this repository is to launch it in the cloud using [mybinder](https://mybinder.org/) by clicking this button: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jonesmg/ALFALFA_Legcay/HEAD)
+Although it is strongly recommended to download this repository and build the Python environment if you wish to use or adapt the code hosted here, if you don't want to install or download anything then the simplest way to use this repository is to launch it in the cloud using [mybinder](https://mybinder.org/) by clicking this button: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jonesmg/ALFALFA_Legacy/HEAD)
 
 Note that when you close (or lose) your connection to mybinder all of the open work that you haven't manually downloaded and saved **will be lost**. This interface is generally intended for testing things out, not for seriously working on code.
 
