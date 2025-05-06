@@ -1,6 +1,6 @@
 # Overview
 
-This repository is intended to be a central location to collect and document code developed for interacting with the [ALFALFA](https://egg.astro.cornell.edu/alfalfa/data/index.php) data cubes hosted at [NRAO](data.nrao.edu).
+This repository is intended to be a central location to collect and document code developed for interacting with the [ALFALFA](https://egg.astro.cornell.edu/alfalfa/data/index.php) data cubes hosted at [NRAO](https://data.nrao.edu/portal/#/).
 
 # Getting Started
 
@@ -45,14 +45,16 @@ conda activate AALegacy
 
 If you don't already have a version of conda installed then you can follow the instructions at the following links to install either [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install) or [Anaconda](https://www.anaconda.com/download/success). Both will work the same, but Miniconda might save a little space, if that is a concern.
 
-#Writing Documentation
-
-Please document any code that you add/edit. We recommend having a separate readme file for each tool, and writing those file in Markdown. GitHub will automatically display these files correct if they have the .md extension. [Here](https://www.markdownguide.org/basic-syntax/) is a quick guide for writing in Markdown. If you've never used Markdown before, you can just write in plain text and it'll work just fine.
+# Adding to this repo
 
 If you are planning on creating a new tool for interacting with the ALFALFA data then please create a new [branch](https://www.geeksforgeeks.org/how-to-create-a-new-branch-in-git/) of the repo using
 
 ```bash
-git checkout -b new_of_new_tool
+git checkout -b name_of_new_tool
 ```
 
 before starting to make changes to the code. This will be enormously helpful in keeping track of everything that is developed without leading to a lot of unnecessary conflicts.
+
+# Writing Documentation
+
+Please document any code that you add/edit. We recommend having a separate readme file for each tool, and writing those files in Markdown. GitHub will automatically display these files correct if they have the .md extension. [Here](https://www.markdownguide.org/basic-syntax/) is a quick guide for writing in Markdown. If you need an example then open this readme file in a plain text editor (it's written in Markdown). If you've never used Markdown before, you can just write in plain text and it'll work just fine.
