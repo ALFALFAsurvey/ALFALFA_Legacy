@@ -17,7 +17,7 @@ Note that when you close (or lose) your connection to mybinder all of the open w
 If you use git then the easiest way to get this repo is to run the following command in a terminal in a suitable location:
 
 ```bash
-git clone git@github.com:jonesmg/ALFALFA_Legacy.git
+git clone https://github.com/jonesmg/ALFALFA_Legacy.git
 ```
 
 If you are planning to work on developing code for this repo then we strongly recommend using git to allow all the changes to be kept track of. For git installation instructions please click [here](https://git-scm.com/downloads). In case you need a refresher [here](https://www.geeksforgeeks.org/basic-git-commands-with-examples/) are some examples of basic git commands.
