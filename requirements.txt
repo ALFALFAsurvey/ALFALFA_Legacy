@@ -1,9 +1,0 @@
-python=3.13
-numpy=2.2
-astropy=7.0
-scipy=1.15
-matplotlib=3.10
-photutils=2.2
-specutils=1.20
-spectral-cube=0.6
-regions=0.10
