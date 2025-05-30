@@ -17,4 +17,4 @@ dependencies:
     - jupyter
     - pip
     - pip:
-        - radio-beam=0.3
+        - radio-beam==0.3.8
