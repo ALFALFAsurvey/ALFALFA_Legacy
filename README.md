@@ -35,7 +35,13 @@ If you already know what you're doing then you can use whatever tool you want to
 ```bash
 conda env create -f environment.yml
 ``` 
-This will create a new conda environment called "AALegacy" which you can then activate with:
+This will create a new conda environment called "AALegacy". Note that if running on a newer Mac, the environment may fail to build, in which case you should try instead using the command:
+
+```bash
+conda env create -f environment.yml --platform osx-64
+```
+
+Once you have successfully created the environment, you can then activate it with:
 
 ```bash
 conda activate AALegacy
