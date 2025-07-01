@@ -6,7 +6,7 @@ This repository is intended to be a central location to collect and document cod
 
 The basic function of this repo is to ensure that all the code for interacting with the ALFALFA cubes uses a single Python environment and is stored in one place.
 
-## I don't want to install anything
+## I don't want to install anything.
 
 Although it is strongly recommended to download this repository and build the Python environment if you wish to use or adapt the code hosted here, if you don't want to install or download anything then the simplest way to use this repository is to launch it in the cloud using [mybinder](https://mybinder.org/) by clicking this button: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jonesmg/ALFALFA_Legacy/HEAD)
 
