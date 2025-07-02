@@ -4,7 +4,7 @@
 
 2. Click on the button that says, "View Images" under the blue bar. You must **not** skip this step.
 
-3. In the search bar type "A2010" or "ALFALFA" and press Enter. Alternatively, if you already know which grid you want, you can type its root name e.g. "0004+13", or "1052+23".
+3. In the search bar type "A2010" or "ALFALFA_" and press Enter. Alternatively, if you already know which grid you want, you can type its root name e.g. "0004+13", or "1052+23".
 
 4. On the search result row corresponding to the grid that you want, click the little clipboard icon on the far left. It will chane to a green check mark, indicating that it has been added to your download stack, ready to be downloaded.
 
