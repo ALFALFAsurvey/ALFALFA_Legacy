@@ -7,14 +7,10 @@ dependencies:
     - numpy=2.2
     - astropy=7.0
     - astroquery=0.4
+    - pandas=2.3
     - scipy=1.15
     - matplotlib=3.10
     - photutils=2.2
-    - specutils=1.20
-    - spectral-cube=0.6
     - regions=0.10
-    - reproject=0.14
     - jupyter
     - pip
-    - pip:
-        - radio-beam==0.3.8
