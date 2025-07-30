@@ -60,7 +60,7 @@ Most of the notebooks require an ALFALFA grid as input to run. To obtain the gri
 python download_example_data.py
 ```
 
-This script will automatically download a tar file (approximately 1.5 GB) contain a grid and extract it into a new directory where the notebooks expect to find the data.
+This script will automatically download a tar file (approximately 1.5 GB) containing a grid and extract it into a new directory where the notebooks expect to find the data.
 
 
 ## Launching a notebook
