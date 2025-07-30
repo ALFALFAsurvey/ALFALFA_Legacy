@@ -1,16 +1,16 @@
 # Overview
 
-This repository is intended to be a central location to collect and document code developed for interacting with the [ALFALFA](https://egg.astro.cornell.edu/alfalfa/data/index.php) data cubes hosted at [NRAO](https://data.nrao.edu/portal/#/).
+This repository contains tools and instructions for accessing and interacting with the data cubes (often referred to as "grids") from the Arecibo Legacy Fast ALFA (Arecibo L-band Feed Array) survey, or ALFALFA. Below are the basic instructions for getting started, and more details about accessing the data, the metadata, and the survey can be found in the [Wiki](https://github.com/jonesmg/ALFALFA_Legacy/wiki) associated with this repository. We strongly recommend reviewing this material if you plan to use these data.
 
 # Getting Started
 
-The basic function of this repo is to ensure that all the code for interacting with the ALFALFA cubes uses a single Python environment and is stored in one place.
+The ALFALFA grids are stored in the [NRAO data archive](https://data.nrao.edu/portal). The tools in this repository are intended to be used with data cubes downloaded from this archive. These tools are all based in Python (mostly Jupyter notebooks) and in order for them to run as intended, we recommend building a dedicated Python environment using the [environment.yml](environment.yml) file in this repository (instructions below). The notebooks folder contains these notebooks which show worked examples of standard tasks that user are likely to want to perform. For example, identifying which ALFALFA grid is needed to a particular position on the sky, extracting a 1-dimensional spectrum from a data cube, or producing a moment zero map and overlaying it on an optical image. The scripts folder includes a Python file defining a function to read in data cubes. We recommend using this function if interacting with the cubes in Python as this updates the FITS headers to the latest standards and applies an approximate correction to the world coordinate system in the header.
 
 ## I don't want to install anything.
 
 Although it is strongly recommended to download this repository and build the Python environment if you wish to use or adapt the code hosted here, if you don't want to install or download anything then the simplest way to use this repository is to launch it in the cloud using [mybinder](https://mybinder.org/) by clicking this button: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jonesmg/ALFALFA_Legacy/HEAD)
 
-Note that when you close (or lose) your connection to mybinder all of the open work that you haven't manually downloaded and saved **will be lost**. This interface is generally intended for testing things out, not for seriously working on code.
+Note that when you close (or lose) your connection to mybinder, all of the open work that you haven't manually downloaded and saved **will be lost**. This interface is generally intended for testing things out, not for seriously working on code or data.
 
 ## Downloading this repository
 
@@ -20,15 +20,15 @@ If you use git then the easiest way to get this repo is to run the following com
 git clone https://github.com/jonesmg/ALFALFA_Legacy.git
 ```
 
-If you are planning to work on developing code for this repo then we strongly recommend using git to allow all the changes to be kept track of. For git installation instructions please click [here](https://git-scm.com/downloads). In case you need a refresher [here](https://www.geeksforgeeks.org/basic-git-commands-with-examples/) are some examples of basic git commands.
+If you are new to git, installation instructions can be found [here](https://git-scm.com/downloads), and [here](https://www.geeksforgeeks.org/basic-git-commands-with-examples/) are some examples of basic git commands.
 
-If you just want to download the repo, but don't want to develop the code or use git, then you can simply download it as a zip file at the following url:
+If you just want to download the repo, but don't want to use git, then you can simply download it as a zip file at the following url:
 
 [https://github.com/jonesmg/ALFALFA_Legacy/archive/refs/heads/main.zip](https://github.com/jonesmg/ALFALFA_Legacy/archive/refs/heads/main.zip)
 
 ## Building the Python environment
 
-This Python environment is defined in the file [environment.yml](environment.yml). This is a [YAML](https://yaml.org/spec/1.2.2/#chapter-1-introduction-to-yaml) file that lists all of the specific package versions such that the software environment used can be common and reproducible. 
+The Python environment is defined in the file [environment.yml](environment.yml). This is a [YAML](https://yaml.org/spec/1.2.2/#chapter-1-introduction-to-yaml) file that lists all of the specific package versions such that the software environment used can be common and reproducible. 
 
 If you already know what you're doing then you can use whatever tool you want to build and launch this environment. However, we recommend using conda. If you already have a version of conda installed (see below) then navigate to where you downloaded this repo and in a terminal run the command:
 
@@ -51,16 +51,24 @@ conda activate AALegacy
 
 If you don't already have a version of conda installed then you can follow the instructions at the following links to install either [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install) or [Anaconda](https://www.anaconda.com/download/success). Both will work the same, but Miniconda might save a little space, if that is a concern.
 
-# Adding to this repo
 
-If you are planning on creating a new tool for interacting with the ALFALFA data then please create a new [branch](https://www.geeksforgeeks.org/how-to-create-a-new-branch-in-git/) of the repo using
+## Downloading example data
+
+Most of the notebooks require an ALFALFA grid as input to run. To obtain the grid used in most of our examples navigate in your terminal to the scripts directory as run the following command:
 
 ```bash
-git checkout -b name_of_new_tool
+python download_example_data.py
 ```
 
-before starting to make changes to the code. This will be enormously helpful in keeping track of everything that is developed without leading to a lot of unnecessary conflicts.
+This script will automatically download a tar file (approximately 1.5 GB) contain a grid and extract it into a new directory where the notebooks expect to find the data.
 
-# Writing Documentation
 
-Please document any code that you add/edit. We recommend having a separate readme file for each tool, and writing those files in Markdown. GitHub will automatically display these files correct if they have the .md extension. [Here](https://www.markdownguide.org/basic-syntax/) is a quick guide for writing in Markdown. If you need an example then open this readme file in a plain text editor (it's written in Markdown). If you've never used Markdown before, you can just write in plain text and it'll work just fine.
+## Launching a notebook
+
+After building and activating the AALegacy environment, navigate to your local version of this repository in your terminal and run the command:
+
+```bash
+jupyter notebook
+```
+
+This will launch a notebook server in your default browser (if the browser fails to open, then try clicking the link for the notebook server in the terminal output), after which you should be able to open the notebooks folder and launch any of the example notebooks.
