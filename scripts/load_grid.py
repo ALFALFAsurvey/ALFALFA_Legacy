@@ -5,6 +5,27 @@ import astropy
 import astropy.units as u
 
 def load_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=False):
+    '''
+    This function loads the requested ALFALFA grid and applies corrections to
+    the header keywords and an approximate fix for the world coordinate system.
+    The weights cubes is also loaded if requested.
+
+    INPUTS:
+    dir_path: (String) Path to the directory containing the data.
+    grid_ra: (String) Right Ascension of the grid to be loaded, e.g., "1044".
+    grid_dec: (String) Declination of the grid to be loaded, e.g., "13".
+    freq_slice: (String) Frequency slice of the ALFALFA data, e.g., "a", "b", "c", or "d".
+    include_weights: (Bool) Return weights cube as well as data (optional).
+
+    OUTPUTS:
+    cube: (Array) Data cube.
+    freq: (Array) Frequency array for the cube (MHz).
+    vel: (Array) Heliocentric velocity array for the cube (km/s).
+    wcs: (WCS Object) World Coordinate System object for the grid (2-dimensional).
+    header: (Header Object) FITS header of the cube.
+    (Optional) weights_cube: (Array) Weights cube.
+    (Optional) weights_header: (Header Object) FITS header of the weights cube.
+    '''
 
     grid_filename = f'{dir_path}{grid_ra}+{grid_dec}{freq_slice}_spectral.fits'
 
