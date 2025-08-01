@@ -1,6 +1,6 @@
 # Overview
 
-This repository contains tools and instructions for accessing and interacting with the data cubes (often referred to as "grids") from the Arecibo Legacy Fast ALFA (Arecibo L-band Feed Array) survey, or ALFALFA. Below are the basic instructions for getting started, and more details about accessing the data, the metadata, and the survey can be found in the [Wiki](https://github.com/jonesmg/ALFALFA_Legacy/wiki) associated with this repository. We strongly recommend reviewing this material if you plan to use these data.
+This repository contains tools and instructions for accessing and interacting with the data cubes (often referred to as "grids") from the Arecibo Legacy Fast ALFA (Arecibo L-band Feed Array) survey, or ALFALFA. Below are the basic instructions for getting started, and more details about accessing the data, the metadata, and the survey can be found in the [Wiki](https://github.com/ALFALFAsurvey/ALFALFA_Legacy/wiki) associated with this repository. We strongly recommend reviewing this material if you plan to use these data.
 
 # Getting Started
 
@@ -8,7 +8,7 @@ The ALFALFA grids are stored in the [NRAO data archive](https://data.nrao.edu/po
 
 ## I don't want to install anything.
 
-Although it is strongly recommended to download this repository and build the Python environment if you wish to use or adapt the code hosted here, if you don't want to install or download anything then the simplest way to use this repository is to launch it in the cloud using [mybinder](https://mybinder.org/) by clicking this button: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jonesmg/ALFALFA_Legacy/HEAD)
+Although it is strongly recommended to download this repository and build the Python environment if you wish to use or adapt the code hosted here, if you don't want to install or download anything then the simplest way to use this repository is to launch it in the cloud using [mybinder](https://mybinder.org/) by clicking this button: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ALFALFAsurvey/ALFALFA_Legacy/HEAD)
 
 Note that when you close (or lose) your connection to mybinder, all of the open work that you haven't manually downloaded and saved **will be lost**. This interface is generally intended for testing things out, not for seriously working on code or data.
 
@@ -17,14 +17,14 @@ Note that when you close (or lose) your connection to mybinder, all of the open 
 If you use git then the easiest way to get this repo is to run the following command in a terminal in a suitable location:
 
 ```bash
-git clone https://github.com/jonesmg/ALFALFA_Legacy.git
+git clone https://github.com/ALFALFAsurvey/ALFALFA_Legacy.git
 ```
 
 If you are new to git, installation instructions can be found [here](https://git-scm.com/downloads), and [here](https://www.geeksforgeeks.org/basic-git-commands-with-examples/) are some examples of basic git commands.
 
 If you just want to download the repo, but don't want to use git, then you can simply download it as a zip file at the following url:
 
-[https://github.com/jonesmg/ALFALFA_Legacy/archive/refs/heads/main.zip](https://github.com/jonesmg/ALFALFA_Legacy/archive/refs/heads/main.zip)
+[https://github.com/ALFALFAsurvey/ALFALFA_Legacy/archive/refs/heads/main.zip](https://github.com/ALFALFAsurvey/ALFALFA_Legacy/archive/refs/heads/main.zip)
 
 ## Building the Python environment
 
