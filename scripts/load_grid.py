@@ -1,8 +1,102 @@
 import astropy.io.fits as fits
 from astropy.wcs import WCS
 import numpy as np
-import astropy
+import astropy, copy
 import astropy.units as u
+from astropy.coordinates import SkyCoord
+
+def fits_header_clean(header, grid_ra, grid_dec, apply_version=None):
+    '''
+    This function takes the ALFALFA grid headers, as orignally stored in NRAO,
+    and corrects the keywords so that they follow modern FITS standards.
+
+    INPUTS:
+    header: FITS header object.
+    grid_ra: (String) Right Ascension of the grid to be loaded, e.g., "1044".
+    grid_dec: (String) Declination of the grid to be loaded, e.g., "13".
+    apply_version: (Float) Version of the correct to apply. Defaults to latest.
+
+    OUTPUTS:
+    new_header: FITS header object.
+    '''
+    
+    header_new = copy.deepcopy(header)
+    
+    # version 1.2
+    apply_version_list = apply_version if apply_version is not None else [1.1, 1.2, 1.3]
+    if "Fits header cleaner" in header_new["HISTORY"]:
+        print("Find previous header modification, will skip for version:")
+        for item in header_new["history"][list(header_new["history"]).index("Fits header cleaner"):]:
+            if "FHC: version " in item:
+                hist_version = float(item.strip("FHC: version "))
+                if hist_version in apply_version_list:
+                    print(hist_version)
+                    apply_version_list.remove(hist_version)
+    print("Will apply header cleaner version: %s" % apply_version_list)
+
+    if 1.1 in apply_version_list:
+        # celestial coordinate
+        header_new.insert('CRPIX1', ("CUNIT1", "deg", ), after=True)
+        header_new.insert('CRPIX2', ("CUNIT2", "deg", ), after=True)
+        header_new["CTYPE1"] = "RA---TAN"
+        header_new["CTYPE2"] = "DEC--TAN"
+        header_new["CDELT1"] = -header_new["CDELT2"]
+        header_new.insert('INSTRUME', ("LONPOLE", 180.0, ), after=True)  # necessary to conform with fits standard
+        
+        # spectral axis
+        header_new["CTYPE3"]  = "FREQ"
+        header_new.insert('CRPIX3', ("CUNIT3", "MHz", ), after=True)
+        header_new["CRPIX3"] = 1
+        header_new.insert('CUNIT3', ("CNAME3", "FREQ-HEL", ), after=True)
+        
+        header_new.insert('EQUINOX', ("SPECSYS", "HELIOCEN", "Spectral reference frame"), after=True)
+        header_new.remove("EPOCH")
+        header_new["VELREF"] = (2, "1 LSR, 2 HEL, 3 OBS, +256 Radio")
+        
+        header_new.rename_keyword("RESTFREQ", "RESTFRQ")  # rest frequency key word should be RESTFRQ
+        header_new["RESTFRQ"] = (1420.405751e6, "Rest-frame frequency (Hz)")
+
+        # polarization axis
+        header_new["CRVAL4"] = -2  # LL and RR
+    
+        # beam information
+        header_new.insert('BMIN', ("BPA", 0, "ALFALFA beam position angles"), after=True)
+
+        # unit
+        header_new.insert('BUNIT', ("BTYPE", "Intensity", ))
+        header_new["BUNIT"] = "mJy/beam"
+
+        if "Fits header cleaner" not in header_new["HISTORY"]:
+            header_new.add_history("Fits header cleaner")
+        header_new.add_history("FHC: version 1.1")
+
+    if 1.2 in apply_version_list:
+        grid_ra, grid_dec = header_new["OBJECT"].split("+")
+        center_pos = SkyCoord("%s:%s:00 %s:00:00" % (grid_ra[:2], grid_ra[2:], grid_dec), unit="hour, deg")
+        #Note that the ALFALFA source positions were corrected as described in section 3.4.2
+        #of Brian Kent's PhD thesis: https://ecommons.cornell.edu/items/a278d737-b863-4e07-b637-88587dff669f
+        #However, these corrections were NOT applied to the grids themselves.
+        #Here we construct an approximate WCS that should be suitable for most applications.
+
+        header_new["CRVAL1"] = center_pos.ra.deg
+        header_new["CRPIX1"] = header_new["NAXIS1"]/2. + 0.5
+        header_new["CRVAL2"] = center_pos.dec.deg
+        header_new["CRPIX2"] = header_new["NAXIS2"]/2. + 0.5
+
+        header_new["CDELT1"] = -1./60  # degree
+        header_new["CDELT2"] = 1./60
+
+        if "Fits header cleaner" not in header_new["HISTORY"]:
+            header_new.add_history("Fits header cleaner")
+        header_new.add_history("FHC: version 1.2")
+    if 1.3 in apply_version_list:
+        header_new["CRPIX3"] = 1
+        header_new["VELREF"] = (2, "1 LSR, 2 HEL, 3 OBS, +256 Radio")
+        if "Fits header cleaner" not in header_new["HISTORY"]:
+            header_new.add_history("Fits header cleaner")
+        header_new.add_history("FHC: version 1.3")
+    
+    return header_new
 
 def load_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=False):
     '''
@@ -35,46 +129,16 @@ def load_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=False):
     #Extract the data from fits file
     cube = hdu[0].data
 
-    #Start by extracting the channel width from the header and build frequency array
-    chan_df = hdu[0].header['CDELT3']
-    freq = (hdu[0].header['CRVAL3'] + hdu[0].header['CDELT3']*np.arange(0,1024,1))*u.MHz
-    
-    #Now build velocity array
-    rest_freq = (hdu[0].header['RESTFREQ']/1E6)*u.MHz
-    vel = ((astropy.constants.c.value/1000)*(rest_freq-freq)/freq)*u.km/u.s
+    #Extract and correct header
+    orig_header = hdu[0].header
+    new_header = fits_header_clean(orig_header, grid_ra, grid_dec)
 
-    #Build new WCS
-    #Note that the ALFALFA source positions were corrected as described in section 3.4.2
-    #of Brian Kent's PhD thesis: https://ecommons.cornell.edu/items/a278d737-b863-4e07-b637-88587dff669f
-    #However, these corrections were NOT applied to the grids themselves.
-    #Here we construct an approximate WCS that should be suitable for most applications.
-    wcs_new = WCS(naxis = 2)
-    wcs_new.wcs.crpix = [72.5,72.5]
-    wcs_new.wcs.cdelt = [-1/60, 1/60]
-    cen_ra = (float(grid_ra[:2]) + float(grid_ra[2:])/60)*15
-    cen_dec = float(grid_dec)
-    wcs_new.wcs.crval = [cen_ra, cen_dec]
-    wcs_new.wcs.ctype = ["RA---CAR", "DEC--CAR"]
-
-    #Update the header with the same WCS
-    header_new = hdu["PRIMARY"].header.copy()
-    header_new['CRVAL1'] = cen_ra
-    header_new['CDELT1'] = -1/60
-    header_new['CRPIX1'] = 72.5
-    header_new['CRVAL2'] = cen_dec
-    header_new['CDELT2'] = 1/60
-    header_new['CRPIX2'] = 72.5
-
-    #Update various header keywords to latest standards
-    header_new["CTYPE3"]  = "FREQ"
-    header_new["CUNIT3"]  = "MHz"
-    header_new["SPECSYS"] = "HELIOCEN"
-    header_new["RESTFRQ"] = 1420.405751768e6  # (Hz)
-    header_new["CNAME3"]  = "FREQ-HEL"
-    header_new["BMAJ"]  = 3.8/60 #arcmin
-    header_new["BMIN"]  = 3.3/60 #arcmin
-    header_new["BPA"]   = 0
-    header_new["CRVAL4"] = -2  # LL and RR
+    #Start by building frequency and velocity arrays
+    grid_wcs = WCS(new_header)
+    freq = grid_wcs.spectral.array_index_to_world(range(grid_wcs.spectral.array_shape[0]))
+    rest_freq = new_header['RESTFRQ'] * u.Hz
+    vel = freq.to(u.km / u.s, equivalencies=u.doppler_optical(rest_freq),
+                  doppler_rest=rest_freq, doppler_convention="optical")
     
     if include_weights:
         wgts_filename = f'{dir_path}{grid_ra}+{grid_dec}{freq_slice}_spectralweights.fits'
@@ -84,27 +148,11 @@ def load_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=False):
     
         #Extract the data from fits file
         wgts_cube = wgts_hdu[0].data
-    
-        #Update the header with the same WCS
-        wgts_header_new = wgts_hdu["PRIMARY"].header.copy()
-        wgts_header_new['CRVAL1'] = cen_ra
-        wgts_header_new['CDELT1'] = -1/60
-        wgts_header_new['CRPIX1'] = 72.5
-        wgts_header_new['CRVAL2'] = cen_dec
-        wgts_header_new['CDELT2'] = 1/60
-        wgts_header_new['CRPIX2'] = 72.5
-    
-        #Update various header keywords to latest standards
-        wgts_header_new["CTYPE3"]  = "FREQ"
-        wgts_header_new["CUNIT3"]  = "MHz"
-        wgts_header_new["SPECSYS"] = "HELIOCEN"
-        wgts_header_new["RESTFRQ"] = 1420.405751768e6  # (Hz)
-        wgts_header_new["CNAME3"]  = "FREQ-HEL"
-        wgts_header_new["BMAJ"]  = 3.8/60 #arcmin
-        wgts_header_new["BMIN"]  = 3.3/60 #arcmin
-        wgts_header_new["BPA"]   = 0
-        wgts_header_new["CRVAL4"] = -2  # LL and RR
 
-        return cube, freq, vel, wcs_new, header_new, wgts_cube, wgts_header_new
+        #Extract and correct header
+        orig_wgts_header = wgts_hdu[0].header
+        new_wgts_header = fits_header_clean(orig_wgts_header, grid_ra, grid_dec)
+
+        return cube, freq, vel, grid_wcs, new_header, wgts_cube, new_wgts_header
     else:
-        return cube, freq, vel, wcs_new, header_new
+        return cube, freq, vel, grid_wcs, new_header
