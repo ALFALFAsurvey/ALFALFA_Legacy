@@ -44,20 +44,25 @@ def fits_header_clean(header, grid_ra, grid_dec, apply_version=None):
         header_new.insert('INSTRUME', ("LONPOLE", 180.0, ), after=True)  # necessary to conform with fits standard
         
         # spectral axis
-        header_new["CTYPE3"]  = "FREQ"
-        header_new.insert('CRPIX3', ("CUNIT3", "MHz", ), after=True)
-        header_new["CRPIX3"] = 1
-        header_new.insert('CUNIT3', ("CNAME3", "FREQ-HEL", ), after=True)
-        
-        header_new.insert('EQUINOX', ("SPECSYS", "HELIOCEN", "Spectral reference frame"), after=True)
-        header_new.remove("EPOCH")
-        header_new["VELREF"] = (2, "1 LSR, 2 HEL, 3 OBS, +256 Radio")
+        if header_new["NAXIS"] == 4:  # only if the spectral axis exists
+            header_new["CTYPE3"]  = "FREQ"
+            header_new.insert('CRPIX3', ("CUNIT3", "MHz", ), after=True)
+            header_new["CRPIX3"] = 1
+            header_new.insert('CUNIT3', ("CNAME3", "FREQ-HEL", ), after=True)
+            
+            header_new.insert('EQUINOX', ("SPECSYS", "HELIOCEN", "Spectral reference frame"), after=True)
+            header_new.remove("EPOCH")
+            header_new["VELREF"] = (2, "1 LSR, 2 HEL, 3 OBS, +256 Radio")
+
+            # polarization axis
+            header_new["CRVAL4"] = -2  # LL and RR
+        else:
+            # polarization axis
+            header_new["CRVAL3"] = -2  # LL and RR
         
         header_new.rename_keyword("RESTFREQ", "RESTFRQ")  # rest frequency key word should be RESTFRQ
         header_new["RESTFRQ"] = (1420.405751e6, "Rest-frame frequency (Hz)")
 
-        # polarization axis
-        header_new["CRVAL4"] = -2  # LL and RR
     
         # beam information
         header_new.insert('BMIN', ("BPA", 0, "ALFALFA beam position angles"), after=True)
