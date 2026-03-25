@@ -5,6 +5,7 @@ jupytext:
     format_name: myst
     format_version: 0.13
     jupytext_version: 1.19.1
+  formats: ipynb,md:myst
 kernelspec:
   display_name: Python [conda env:AALegacy]
   language: python
@@ -13,7 +14,7 @@ kernelspec:
 
 # All Arecibo Sky Plots
 
-Plot both the grids, and the ALFALFA100 [Haynes et al. 2018](http://adsabs.harvard.edu/abs/2018ApJ...861...49H) sources.  
+Plot both the grids, and the ALFALFA100 [Haynes et al. 2018](http://adsabs.harvard.edu/abs/2018ApJ...861...49H) sources.
 
 ```{code-cell} ipython3
 #Import statements

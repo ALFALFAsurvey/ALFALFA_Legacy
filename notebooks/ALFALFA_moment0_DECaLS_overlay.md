@@ -5,10 +5,11 @@ jupytext:
     format_name: myst
     format_version: 0.13
     jupytext_version: 1.19.1
+  formats: ipynb,md:myst
 kernelspec:
-  display_name: Python [conda env:AALegacy]
+  name: python3
+  display_name: Python 3 (ipykernel)
   language: python
-  name: conda-env-AALegacy-py
 ---
 
 ```{code-cell} ipython3
@@ -45,8 +46,6 @@ data_path = cwd+'../data/A2010/pipeline.unknown_date/'
 grid_ra = '1044'
 grid_dec = '13'
 freq_slice = 'a'
-
-grid_filename = f'{grid_ra}+{grid_dec}{freq_slice}_spectral.fits'
 
 #Use the load_grid function to load the cube and WCS
 cube, freq, vel, grid_wcs, header = load_grid(data_path,grid_ra,grid_dec,freq_slice)

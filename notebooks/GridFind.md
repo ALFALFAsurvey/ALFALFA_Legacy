@@ -5,6 +5,7 @@ jupytext:
     format_name: myst
     format_version: 0.13
     jupytext_version: 1.19.1
+  formats: ipynb,md:myst
 kernelspec:
   display_name: Python [conda env:AALegacy]
   language: python
@@ -151,7 +152,7 @@ sky_region = grids["box"][i]
 sky_region.contains(skycoord, makegridwcs(sky_region.center))
 ```
 
-2. Which grid is a sky position in? 
+2. Which grid is a sky position in?
 
 ```{code-cell} ipython3
 # Enter your RA and Dec in decimal degrees, 

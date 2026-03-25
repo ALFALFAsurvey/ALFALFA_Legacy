@@ -5,6 +5,7 @@ jupytext:
     format_name: myst
     format_version: 0.13
     jupytext_version: 1.19.1
+  formats: ipynb,md:myst
 kernelspec:
   display_name: Python 3 (ipykernel)
   language: python
@@ -319,7 +320,7 @@ src_coord_list = SkyCoord(ra=["%ih%im%fs" % (rah, ram, ras) for (rah, ram, ras)
                               in zip(a100_tb["HIDE-"], a100_tb["HIDEd"], a100_tb["HIDEm"], a100_tb["HIDEs"])], unit=("hour", "deg"))
 ```
 
-Read in the grid file, will try to read in all fits (a-d) for the input RA and Dec. We demonstrate here the 1244+33 grid which contains the NGC 4631 group, known to display large scale tidal features (e.g. [Wang+23](https://ui.adsabs.harvard.edu/abs/2023ApJ...944..102W/abstract)). 
+Read in the grid file, will try to read in all fits (a-d) for the input RA and Dec. We demonstrate here the 1244+33 grid which contains the NGC 4631 group, known to display large scale tidal features (e.g. [Wang+23](https://ui.adsabs.harvard.edu/abs/2023ApJ...944..102W/abstract)).
 
 ```{code-cell} ipython3
 grid_path = "../data/A2010/pipeline.unknown_date/"
