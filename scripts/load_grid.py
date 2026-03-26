@@ -63,13 +63,14 @@ def fits_header_clean(header, grid_ra, grid_dec, apply_version=None):
         header_new.rename_keyword("RESTFREQ", "RESTFRQ")  # rest frequency key word should be RESTFRQ
         header_new["RESTFRQ"] = (1420.405751e6, "Rest-frame frequency (Hz)")
 
-    
         # beam information
-        header_new.insert('BMIN', ("BPA", 0, "ALFALFA beam position angles"), after=True)
+        if "BMIN" in header_new:  # only modify if header contains beam information
+            header_new.insert("BMIN", ("BPA", 0, "ALFALFA beam position angles"), after=True)
 
         # unit
-        header_new.insert('BUNIT', ("BTYPE", "Intensity", ))
-        header_new["BUNIT"] = "mJy/beam"
+        if "BUNIT" in header_new:  # only modify if header contains unit information
+            header_new.insert("BUNIT", ("BTYPE", "Intensity", ))
+            header_new["BUNIT"] = "mJy/beam"
 
         if "Fits header cleaner" not in header_new["HISTORY"]:
             header_new.add_history("Fits header cleaner")
