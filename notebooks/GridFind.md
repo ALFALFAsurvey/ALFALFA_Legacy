@@ -1,15 +1,17 @@
 ---
-jupytext:
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.19.1
-  formats: ipynb,md:myst
-kernelspec:
-  display_name: Python [conda env:AALegacy]
-  language: python
-  name: conda-env-AALegacy-py
+jupyter:
+  jupytext:
+    default_lexer: ipython3
+    formats: ipynb,md
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.19.1
+  kernelspec:
+    display_name: Python [conda env:AALegacy]
+    language: python
+    name: conda-env-AALegacy-py
 ---
 
 # ALFALFA Grid Tools
@@ -27,7 +29,7 @@ From Grid Finding Subgroup at the ALFLAFA Legacy Workshop, July 2025
 * Mike Jones
 * Catie Bell
 
-```{code-cell} ipython3
+```python
 #Import statements
 
 import pandas as pd
@@ -42,7 +44,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 ```
 
-```{code-cell} ipython3
+```python
 #Defining some functions
 
 def makegridwcs(sky_center):
@@ -65,7 +67,7 @@ def grid_find(skycoord):
     return grids.loc[grids["box"].map(lambda x: x.contains(skycoord, makegridwcs(x.center))) ]
 ```
 
-```{code-cell} ipython3
+```python
 #Opening the list of grids, and putting it into a Pandas database
 
 with open("gridlist_july2025.txt", "r") as f:
@@ -98,11 +100,11 @@ for i in range(len(grids)):
         grids.loc[i, "boundary"] = False
 ```
 
-```{code-cell} ipython3
+```python
 grids.head()
 ```
 
-```{code-cell} ipython3
+```python
 grids.iloc[42]
 ```
 
@@ -110,7 +112,7 @@ grids.iloc[42]
 
 1. Plot a single grid
 
-```{code-cell} ipython3
+```python
 fig, ax = plt.subplots(figsize=(10,3))
 
 #You have to manually enter the limits for your plot. 
@@ -125,7 +127,7 @@ plotgrid(i)
 
 2. Plot all the grids on a rectangular all Arecibo sky projection
 
-```{code-cell} ipython3
+```python
 fig, ax = plt.subplots(figsize=(10,3))
 plt.xlim(370, -5)
 plt.ylim(-5,37)
@@ -138,7 +140,7 @@ for i in range(len(grids)): plotgrid(i)
 ## Grid Searching
 1. Is a sky position in a specific grid
 
-```{code-cell} ipython3
+```python
 # Enter your RA and Dec in decimal degrees, 
 # or do something more complicated to make a SkyCoord object
 ra = 100
@@ -154,7 +156,7 @@ sky_region.contains(skycoord, makegridwcs(sky_region.center))
 
 2. Which grid is a sky position in?
 
-```{code-cell} ipython3
+```python
 # Enter your RA and Dec in decimal degrees, 
 # or do something more complicated to make a SkyCoord object
 ra = 188
@@ -165,7 +167,7 @@ found = grid_find(skycoord)
 found
 ```
 
-```{code-cell} ipython3
+```python
 # Plot grids sky posiiton is in
 
 fig, ax = plt.subplots(figsize=(10,3))

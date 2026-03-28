@@ -1,15 +1,17 @@
 ---
-jupytext:
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.19.1
-  formats: ipynb,md:myst
-kernelspec:
-  display_name: Python [conda env:AALegacy]
-  language: python
-  name: conda-env-AALegacy-py
+jupyter:
+  jupytext:
+    default_lexer: ipython3
+    formats: ipynb,md
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.19.1
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
 # ALFALFA Moment Maps
@@ -18,9 +20,9 @@ This notebook reads in an ALFALFA grid (all four spectra ranges) and weights and
 
 It can also overlay optical detections from Durbala et al. 2020 by calling out to Vizier. 
 
-**Note**: You will need the ALFALFA 1044+13 grid in that data directory in order for this notebook to run successfully. You can obtain this by running the [download_example_data.py](../scripts/download_example_data.py) script in the scripts directory. If you wish to run this with other grids then you can find instructions for accessing the grids in the [grid_access.md](../docs/grid_access.md) file in the docs folder or illustrated instructions on the [wiki](https://github.com/jonesmg/ALFALFA_Legacy/wiki/Grid-access-via-NRAO-archive).
+**Note**: You will need the ALFALFA 1044+13 grid in that data directory in order for this notebook to run successfully. You can obtain this by running the [download_example_data.py](../scripts/download_example_data.py) script in the scripts directory. If you wish to run this with other grids then you can find instructions for accessing the grids in the [grid_access.md](../docs/grid_access.md) file in the docs folder or illustrated instructions on the [wiki](https://github.com/ALFALFAsurvey/ALFALFA_Legacy/wiki/ALFALFA-Grid-Access).
 
-```{code-cell} ipython3
+```python
 import copy, os
 from astropy.coordinates import SkyCoord
 import astropy.constants as const
@@ -36,14 +38,14 @@ from astroquery.vizier import Vizier
 HI_restfreq = 1420405751.0 * u.Hz
 ```
 
-```{code-cell} ipython3
+```python
 #Define the path to the data
 #You should already have run the data download script
 cwd = os.getcwd()+'/'
 data_path = cwd+'../data/A2010/pipeline.unknown_date/'
 ```
 
-```{code-cell} ipython3
+```python
 # Function to average the two polarizations together and return a fits HDU object with the same header
 def avg_pol(file):
     stokesI = np.mean(file[0].data,axis=0)
@@ -51,7 +53,7 @@ def avg_pol(file):
     return new_file
 ```
 
-```{code-cell} ipython3
+```python
 # Function to make a mom0 map with the option to clip at a given sigma value.
 # If the grid is an 'a' grid, only make a mom0 using the low frequency portion of the grid.
 # Returns a 2-d array.
@@ -79,7 +81,7 @@ def simp_mom0(file,sigma=False):
     return mom0
 ```
 
-```{code-cell} ipython3
+```python
 # Function to make a mom8 map with the option to clip at a given sigma value.  Mom8 is the max value along freq axis.
 # If the grid is an 'a' grid, only make a mom0 using the low frequency portion of the grid.
 # Returns a 2-d array.
@@ -96,7 +98,7 @@ def simp_mom8(file,sigma=False):
     return mom8
 ```
 
-```{code-cell} ipython3
+```python
 # Function to calculate the frequency associated with a velocity.  Both are in the heliocentric frame.
 def vhelio2freq(vhelio):
     z = vhelio / const.c
@@ -104,7 +106,7 @@ def vhelio2freq(vhelio):
     return freq.decompose().to(u.Hz)
 ```
 
-```{code-cell} ipython3
+```python
 # Read in the data cube
 grida_hdu = fits.open(data_path+'1044+13a_spectral.fits')
 gridb_hdu = fits.open(data_path+'1044+13b_spectral.fits')
@@ -112,7 +114,7 @@ gridc_hdu = fits.open(data_path+'1044+13c_spectral.fits')
 gridd_hdu = fits.open(data_path+'1044+13d_spectral.fits')
 ```
 
-```{code-cell} ipython3
+```python
 # Read in the weights cube
 wgtsa_hdu = fits.open(data_path+'1044+13a_spectralweights.fits')
 wgtsb_hdu = fits.open(data_path+'1044+13b_spectralweights.fits')
@@ -120,7 +122,7 @@ wgtsc_hdu = fits.open(data_path+'1044+13c_spectralweights.fits')
 wgtsd_hdu = fits.open(data_path+'1044+13d_spectralweights.fits')
 ```
 
-```{code-cell} ipython3
+```python
 # Normalize the data by the weights
 grida_norm = copy.deepcopy(grida_hdu)
 gridb_norm = copy.deepcopy(gridb_hdu)
@@ -132,12 +134,12 @@ gridc_norm[0].data = gridc_norm[0].data * wgtsc_hdu[0].data / np.max(wgtsc_hdu[0
 gridd_norm[0].data = gridd_norm[0].data * wgtsd_hdu[0].data / np.max(wgtsd_hdu[0].data)
 ```
 
-```{code-cell} ipython3
+```python
 # Get the spatial wcs information
 alfalfa_wcs = WCS(grida_hdu[0].header,naxis=2)
 ```
 
-```{code-cell} ipython3
+```python
 # Optional: plot the location of the galaxies
 # Open Durbala+2020 tables from CDS
 durb1 = Vizier(catalog="J/AJ/160/271/table1", columns=['*', '_RAJ2000', '_DEJ2000'], row_limit=-1).query_constraints()[0]
@@ -146,7 +148,7 @@ durb2 = Vizier(catalog="J/AJ/160/271/table2", columns=['*', '_RAJ2000', '_DEJ200
 durb1_coord = SkyCoord(durb1['_RAJ2000'],durb1['_DEJ2000'],unit='deg')
 ```
 
-```{code-cell} ipython3
+```python
 fig = plt.figure()
 fig_im, ax_im = plt.subplots(2, 2, figsize=(12,12), subplot_kw={'projection': alfalfa_wcs}, squeeze=False)
 
@@ -184,7 +186,7 @@ all_mom8 = all_mom8.reshape(4,-1,np.shape(all_mom8)[-1])
 all_mom8 = np.max(all_mom8, axis=0)
 ```
 
-```{code-cell} ipython3
+```python
 fig = plt.figure(figsize=(10,10))
 ax = fig.add_subplot(111,projection=alfalfa_wcs)
 im = ax.imshow(all_mom8,norm=colors.LogNorm())

@@ -1,18 +1,20 @@
 ---
-jupytext:
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.19.1
-  formats: ipynb,md:myst
-kernelspec:
-  name: python3
-  display_name: Python 3 (ipykernel)
-  language: python
+jupyter:
+  jupytext:
+    default_lexer: ipython3
+    formats: ipynb,md
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.19.1
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
-```{code-cell} ipython3
+```python
 import os, sys
 import numpy, astropy
 import astropy.io.fits as fits
@@ -32,16 +34,16 @@ from load_grid import load_grid
 
 This notebook takes an ALFALFA cube and extract a 1-dimensional spectrum at a specified location. It does this first over an area equal to the beam shape and then over a larger square region.
 
-**Note**: You will need the ALFALFA 1044+13 grid in that data directory in order for this notebook to run successfully. You can obtain this by running the [download_example_data.py](../scripts/download_example_data.py) script in the scripts directory. If you wish to run this with other grids then you can find instructions for accessing the grids in the [grid_access.md](../docs/grid_access.md) file in the docs folder or illustrated instructions on the [wiki](https://github.com/jonesmg/ALFALFA_Legacy/wiki/Grid-access-via-NRAO-archive).
+**Note**: You will need the ALFALFA 1044+13 grid in that data directory in order for this notebook to run successfully. You can obtain this by running the [download_example_data.py](../scripts/download_example_data.py) script in the scripts directory. If you wish to run this with other grids then you can find instructions for accessing the grids in the [grid_access.md](../docs/grid_access.md) file in the docs folder or illustrated instructions on the [wiki](https://github.com/ALFALFAsurvey/ALFALFA_Legacy/wiki/ALFALFA-Grid-Access).
 
-```{code-cell} ipython3
+```python
 #Define the path to the data
 #You should already have run the data download script
 cwd = os.getcwd()+'/'
 data_path = cwd+'../data/A2010/pipeline.unknown_date/'
 ```
 
-```{code-cell} ipython3
+```python
 #Define the grid you are using
 grid_ra = '1044'
 grid_dec = '13'
@@ -64,7 +66,7 @@ beam_factor = (numpy.pi*bmaj*bmin/(pixsize**2.))/(4.*numpy.log(2.))
 chan_df = header['CDELT3']*u.MHz
 ```
 
-```{code-cell} ipython3
+```python
 #Start by extracting a spectrum in the shape of the beam
 
 #Define a position to extract a spectrum at
@@ -78,7 +80,7 @@ sky_aperture = SkyEllipticalAperture(spec_pos, a=bmaj, b=bmin, theta=bpa)
 pix_aperture = sky_aperture.to_pixel(grid_wcs.celestial)
 ```
 
-```{code-cell} ipython3
+```python
 #Plot the aperture on the grid
 
 fig = plt.figure(figsize=(8,8))
@@ -92,7 +94,7 @@ plt.xlabel(r'RA')
 plt.ylabel(r'Dec')
 ```
 
-```{code-cell} ipython3
+```python
 #Now extract the spectrum
 pix_aperture_mask = pix_aperture.to_mask(method='exact')
 
@@ -107,7 +109,7 @@ for i in range(len(spec)):
 spec = spec*u.mJy
 ```
 
-```{code-cell} ipython3
+```python
 plt.plot(vel,spec)
 
 plt.axhline(0.,c='k',lw=1)
@@ -119,11 +121,11 @@ plt.ylabel('Flux Density [mJy]')
 
 We can compare the extracted spectrum to the published ALFALFA spectrum from a.100 (Haynes et al. 2018).
 
-```{code-cell} ipython3
+```python
 alf_spec = Table.read("https://vizier.cds.unistra.fr/viz-bin/ftp-index?J/ApJ/861/49/sp/A200878.fits")
 ```
 
-```{code-cell} ipython3
+```python
 plt.plot(vel,spec, label="Extracted", c='tab:blue')
 plt.plot(alf_spec["VHELIO"], alf_spec["FLUX"], label="a.100", c='tab:orange', alpha=0.75)
 
@@ -138,11 +140,10 @@ plt.legend()
 
 The extracted spectrum matches closely with the published ALFALFA spectrum. However, for more extended sourced the situation can be more complex.
 
-+++
 
 To illustrate this we will now extract the spectrum of the nearby galaxy UGC5826. This is a spatially extended source, so we will extract it over a 20'x20' square region. We also need to load the 'a' frequency slice as this is a lower velocity source.
 
-```{code-cell} ipython3
+```python
 #Define the grid you are using
 grid_ra = '1044'
 grid_dec = '13'
@@ -165,7 +166,7 @@ beam_factor = (numpy.pi*bmaj*bmin/(pixsize**2.))/(4.*numpy.log(2.))
 chan_df = header['CDELT3']*u.MHz
 ```
 
-```{code-cell} ipython3
+```python
 #Start by extracting a spectrum in the shape of the beam
 
 #Define a position to extract a spectrum at
@@ -179,7 +180,7 @@ sky_aperture = SkyEllipticalAperture(spec_pos, a=bmaj, b=bmin, theta=bpa)
 pix_aperture = sky_aperture.to_pixel(grid_wcs.celestial)
 ```
 
-```{code-cell} ipython3
+```python
 #Make a rectangular aperture that's 20x20 arcmin
 sky_aperture = SkyRectangularAperture(spec_pos,w=20*u.arcmin,h=20*u.arcmin)
 
@@ -187,7 +188,7 @@ sky_aperture = SkyRectangularAperture(spec_pos,w=20*u.arcmin,h=20*u.arcmin)
 pix_aperture = sky_aperture.to_pixel(grid_wcs.celestial)
 ```
 
-```{code-cell} ipython3
+```python
 #Plot the aperture on the grid
 
 fig = plt.figure(figsize=(8,8))
@@ -200,7 +201,7 @@ plt.xlabel(r'RA')
 plt.ylabel(r'Dec')
 ```
 
-```{code-cell} ipython3
+```python
 #Now extract the spectrum
 pix_aperture_mask = pix_aperture.to_mask(method='exact')
 
@@ -215,7 +216,7 @@ for i in range(len(spec)):
 spec = spec*u.mJy
 ```
 
-```{code-cell} ipython3
+```python
 plt.plot(vel,spec)
 
 plt.axhline(0.,c='k',lw=1)
@@ -227,14 +228,14 @@ plt.ylabel('Flux Density [mJy]')
 
 Now let's compare with the spectrum catalogued in ALFALFA and a spectrum from the Green Bank 140ft telescope (Springob et al. 2005).
 
-```{code-cell} ipython3
+```python
 alf_spec = Table.read("https://vizier.cds.unistra.fr/viz-bin/ftp-index?J/ApJ/861/49/sp/A005826.fits")
 
 gbt_spec = Table.read("https://ned.ipac.caltech.edu/spc1/2005/2005ApJS..160..149S/UGC_05826:S:HI:shg2005.txt",
                       format='ascii.commented_header', names=['vel','freq','flux','base'])
 ```
 
-```{code-cell} ipython3
+```python
 plt.plot(vel,spec, label="Extracted", c='tab:blue')
 plt.plot(gbt_spec["vel"], gbt_spec["flux"]-gbt_spec["base"], label="GB140ft", c='tab:green')
 plt.plot(alf_spec["VHELIO"], alf_spec["FLUX"], label="a.100", c='tab:orange')
@@ -248,6 +249,7 @@ plt.ylabel('Flux Density [mJy]')
 plt.legend()
 ```
 
+<!-- #region -->
 The a.100 and the GB 140ft spectrum agree very well, but the extracted spectrum appears to contains significantly more flux, however, some of this additional flux may have been double counted due to the sidelobes of Arecibo.
 
 Users are reminded that the extraction of fluxes for extended sources from the ALFALFA grids is complicated by the nature of the data products as constructs from transit drift scans made by the seven-horn ALFA front-end array and the significant sidelobes of the Arecibo antenna. These effects have been discussed in Irwin et al. (2009), Dowell (2010) and Hoffman et al. (2019). 
@@ -268,3 +270,4 @@ Dowell 2010, PhDThesis, https://ui.adsabs.harvard.edu/abs/2010PhDT.......102D/ab
 Haynes et al. (2018), https://ui.adsabs.harvard.edu/abs/2018ApJ...861...49H/abstract
 
 Hoffman et al. (2019), https://ui.adsabs.harvard.edu/abs/2019AJ....157..194H/abstract
+<!-- #endregion -->

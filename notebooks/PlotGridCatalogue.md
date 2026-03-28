@@ -1,22 +1,24 @@
 ---
-jupytext:
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.19.1
-  formats: ipynb,md:myst
-kernelspec:
-  display_name: Python [conda env:AALegacy]
-  language: python
-  name: conda-env-AALegacy-py
+jupyter:
+  jupytext:
+    default_lexer: ipython3
+    formats: ipynb,md
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.19.1
+  kernelspec:
+    display_name: Python [conda env:AALegacy]
+    language: python
+    name: conda-env-AALegacy-py
 ---
 
 # All Arecibo Sky Plots
 
 Plot both the grids, and the ALFALFA100 [Haynes et al. 2018](http://adsabs.harvard.edu/abs/2018ApJ...861...49H) sources.
 
-```{code-cell} ipython3
+```python
 #Import statements
 
 import pandas as pd
@@ -33,7 +35,7 @@ import matplotlib.pyplot as plt
 from astroquery.vizier import Vizier
 ```
 
-```{code-cell} ipython3
+```python
 #Defining some functions
 
 def makegridwcs(sky_center):
@@ -53,7 +55,7 @@ def plotgrid(i):
     pixel_region.plot(ax=ax, color='red', lw=1.0)
 ```
 
-```{code-cell} ipython3
+```python
 #Opening the list of grids, and putting it into a Pandas database
 
 with open("gridlist_july2025.txt", "r") as f:
@@ -67,16 +69,16 @@ grids["ra"] = grids["coord"].map(lambda x: round(float(x.ra/u.deg)))
 grids["dec"] = grids["coord"].map(lambda x: round(float(x.dec/u.deg)))
 ```
 
-```{code-cell} ipython3
+```python
 #Download the ALFALFA 100% from Vizier/CDS
 cat = Vizier(catalog="J/ApJ/861/49/table2", columns=['*', '_RAJ2000', '_DEJ2000'], row_limit=-1).query_constraints()[0]
 ```
 
-```{code-cell} ipython3
+```python
 cat
 ```
 
-```{code-cell} ipython3
+```python
 #Plot the ALFALFA Spring Sky (RA = 07h30m to 16h30m or 112.5-247.5deg)
 
 fig, ax = plt.subplots(figsize=(20,6))
@@ -89,7 +91,7 @@ plt.xlabel('RA (deg)')
 for i in range(len(grids)): plotgrid(i)
 ```
 
-```{code-cell} ipython3
+```python
 #Plot one half of the Fall sky
 fig, ax = plt.subplots(figsize=(5,5))
 
@@ -102,7 +104,7 @@ plt.xlabel('RA (deg)')
 for i in range(len(grids)): plotgrid(i)
 ```
 
-```{code-cell} ipython3
+```python
 #Plot the other half of the Fall sky
 fig, ax = plt.subplots(figsize=(5,5))
 
@@ -115,7 +117,7 @@ plt.xlabel('RA (deg)')
 for i in range(len(grids)): plotgrid(i)
 ```
 
-```{code-cell} ipython3
+```python
 # Plot the entire sky: 
 
 fig, ax = plt.subplots(figsize=(20,3))
@@ -128,6 +130,6 @@ plt.xlabel('RA (deg)')
 for i in range(len(grids)): plotgrid(i)
 ```
 
-```{code-cell} ipython3
+```python
 
 ```

@@ -1,18 +1,20 @@
 ---
-jupytext:
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.19.1
-  formats: ipynb,md:myst
-kernelspec:
-  display_name: Python [conda env:AALegacy]
-  language: python
-  name: conda-env-AALegacy-py
+jupyter:
+  jupytext:
+    default_lexer: ipython3
+    formats: ipynb,md
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.19.1
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
-```{code-cell} ipython3
+```python
 # record header cleaner history
 header_cleaner_version = 1.3
 apply_version_list = [1.1, 1.2, 1.3]
@@ -20,9 +22,8 @@ apply_version_list = [1.1, 1.2, 1.3]
 
 This notebook takes an ALFALFA grid (as hosted in the NRAO archive) and updates the header keywords. This ensures the headers are accurate and compatible with modern standards, e.g., enabling spectral axis conversions in CARTA.
 
-**Note**: You will need to have already downloaded the grid you wish to use and placed it in the same directory as this notebook. You can find instructions for accessing the grids in the [grid_access.md](../docs/grid_access.md) file in the docs folder and illustrated instructions on the [wiki](https://github.com/jonesmg/ALFALFA_Legacy/wiki/Grid-access-via-NRAO-archive). In this case you need the 1044+13 grid and the "a" spectral cube needs to be placed in the current working directory.
+**Note**: You will need to have already downloaded the grid you wish to use and placed it in the same directory as this notebook. You can find instructions for accessing the grids in the [grid_access.md](../docs/grid_access.md) file in the docs folder and illustrated instructions on the [wiki](https://github.com/ALFALFAsurvey/ALFALFA_Legacy/wiki/ALFALFA-Grid-Access). In this case you need the 1044+13 grid and the "a" spectral cube needs to be placed in the current working directory.
 
-+++
 
 changelog 
 - 1.3
@@ -38,11 +39,10 @@ changelog
     - add beam polarization angle
     - correct unit parameters
 
-+++
 
 # Imports
 
-```{code-cell} ipython3
+```python
 import numpy as np
 from astropy.io import fits
 from astropy.coordinates import SkyCoord
@@ -50,7 +50,7 @@ from astropy.coordinates import SkyCoord
 
 # Read in data
 
-```{code-cell} ipython3
+```python
 # Define the grid you are using
 grid_ra = '1044'
 grid_dec = '13'
@@ -62,19 +62,19 @@ grid_filename = f'{grid_ra}+{grid_dec}{freq_slice}_spectral.fits'
 cube_use =  fits.open(grid_filename)
 ```
 
-```{code-cell} ipython3
+```python
 # open the header
 header_new = cube_use["PRIMARY"].header.copy()
 ```
 
-```{code-cell} ipython3
+```python
 # view the current header
 header_new
 ```
 
 Check the header cleaner version, and decide what modifications to apply. Can be changed manually
 
-```{code-cell} ipython3
+```python
 if "Fits header cleaner" in header_new["HISTORY"]:
     print("Find previous header modification, will skip for version:")
     for item in header_new["history"][list(header_new["history"]).index("Fits header cleaner"):]:
@@ -85,17 +85,16 @@ if "Fits header cleaner" in header_new["HISTORY"]:
                 apply_version_list.remove(hist_version)
 ```
 
-```{code-cell} ipython3
+```python
 print("Will apply header cleaner version: %s" % apply_version_list)
 ```
 
 # version 1.1: correcting keywords and parameters
 
-+++
 
 Change the celestial coordinate keywords to conform with the fits standard
 
-```{code-cell} ipython3
+```python
 if 1.1 in apply_version_list:
     header_new.insert('CRPIX1', ("CUNIT1", "deg", ), after=True)
     header_new.insert('CRPIX2', ("CUNIT2", "deg", ), after=True)
@@ -107,7 +106,7 @@ if 1.1 in apply_version_list:
 
 Change the keywords for the frequency axis, and correct the rest-frame frequency.
 
-```{code-cell} ipython3
+```python
 if 1.1 in apply_version_list:
     header_new["CTYPE3"]  = "FREQ"
     header_new.insert('CRPIX3', ("CUNIT3", "MHz", ), after=True)
@@ -124,27 +123,27 @@ if 1.1 in apply_version_list:
 
 Change the stokes parameters to LL and RR
 
-```{code-cell} ipython3
+```python
 if 1.1 in apply_version_list:
     header_new["CRVAL4"] = -2  # LL and RR
 ```
 
 Add keywords for beam
 
-```{code-cell} ipython3
+```python
 if 1.1 in apply_version_list:
     header_new.insert('BMIN', ("BPA", 0, "ALFALFA beam position angle"), after=True)
 ```
 
 Change BUNIT so it can be parsed by astropy.unit
 
-```{code-cell} ipython3
+```python
 if 1.1 in apply_version_list:
     header_new.insert('BUNIT', ("BTYPE", "Intensity", ))
     header_new["BUNIT"] = "mJy/beam"
 ```
 
-```{code-cell} ipython3
+```python
 if 1.1 in apply_version_list:
     if "Fits header cleaner" not in header_new["HISTORY"]:
         header_new.add_history("Fits header cleaner")
@@ -153,17 +152,16 @@ if 1.1 in apply_version_list:
 
 # version 1.2: reset celestial coordinate
 
-+++
 
 Set the reference pixel to the central pixel, at the position marked by the grid name
 
-```{code-cell} ipython3
+```python
 if 1.2 in apply_version_list:
     grid_ra, grid_dec = header_new["OBJECT"].split("+")
     center_pos = SkyCoord("%s:%s:00 %s:00:00" % (grid_ra[:2], grid_ra[2:], grid_dec), unit="hour, deg")
 ```
 
-```{code-cell} ipython3
+```python
 if 1.2 in apply_version_list:
     header_new["CRVAL1"] = center_pos.ra.deg
     header_new["CRPIX1"] = header_new["NAXIS1"]/2. + 0.5
@@ -173,13 +171,13 @@ if 1.2 in apply_version_list:
 
 Change pixel size, each grid file should be 2.4 x 2.4 degree sampled by 144x144 pixels, so each pixel is exactly 1 arcmin
 
-```{code-cell} ipython3
+```python
 if 1.2 in apply_version_list:
     header_new["CDELT1"] = -1./60  # degree
     header_new["CDELT2"] = 1./60
 ```
 
-```{code-cell} ipython3
+```python
 if 1.2 in apply_version_list:
     if "Fits header cleaner" not in header_new["HISTORY"]:
         header_new.add_history("Fits header cleaner")
@@ -188,17 +186,16 @@ if 1.2 in apply_version_list:
 
 # Version 1.3: correct spectral axis
 
-+++
 
 Fix the offset in the spectral axis. When converted to **optical velocity**, ...a grids should span 3293.53 to -2000.199 km/s.
 
-```{code-cell} ipython3
+```python
 if 1.3 in apply_version_list:
     header_new["CRPIX3"] = 1
     header_new["VELREF"] = (2, "1 LSR, 2 HEL, 3 OBS, +256 Radio")
 ```
 
-```{code-cell} ipython3
+```python
 if 1.3 in apply_version_list:
     if "Fits header cleaner" not in header_new["HISTORY"]:
         header_new.add_history("Fits header cleaner")
@@ -207,7 +204,7 @@ if 1.3 in apply_version_list:
 
 # Grouping into function
 
-```{code-cell} ipython3
+```python
 def fits_header_clean(header, apply_version=None):
     
     header_new = copy.deepcopy(header)
@@ -288,12 +285,12 @@ def fits_header_clean(header, apply_version=None):
 
 # Write fits
 
-```{code-cell} ipython3
+```python
 # attach the new header to the data
 cube_use["PRIMARY"].header = header_new
 ```
 
-```{code-cell} ipython3
+```python
 # define the output grid name
 out_ext = 'new'
 grid_out_filename = f'{grid_ra}+{grid_dec}{freq_slice}_spectral_{out_ext}.fits'

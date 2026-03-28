@@ -1,18 +1,20 @@
 ---
-jupytext:
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.19.1
-  formats: ipynb,md:myst
-kernelspec:
-  name: python3
-  display_name: Python 3 (ipykernel)
-  language: python
+jupyter:
+  jupytext:
+    default_lexer: ipython3
+    formats: ipynb,md
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.19.1
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
-```{code-cell} ipython3
+```python
 import os, sys
 import numpy, astropy
 from astropy.wcs import WCS
@@ -32,16 +34,16 @@ from load_grid import load_grid
 
 This notebook takes an ALFALFA grid file, makes a quick moment zero map, downloads a DECaLS image for the corresponding sky area, and finally overlays HI contours on the image.
 
-**Note**: You will need the ALFALFA 1044+13 grid in that data directory in order for this notebook to run successfully. You can obtain this by running the [download_example_data.py](../scripts/download_example_data.py) script in the scripts directory. If you wish to run this with other grids then you can find instructions for accessing the grids in the [grid_access.md](../docs/grid_access.md) file in the docs folder or illustrated instructions on the [wiki](https://github.com/jonesmg/ALFALFA_Legacy/wiki/Grid-access-via-NRAO-archive).
+**Note**: You will need the ALFALFA 1044+13 grid in that data directory in order for this notebook to run successfully. You can obtain this by running the [download_example_data.py](../scripts/download_example_data.py) script in the scripts directory. If you wish to run this with other grids then you can find instructions for accessing the grids in the [grid_access.md](../docs/grid_access.md) file in the docs folder or illustrated instructions on the [wiki](https://github.com/ALFALFAsurvey/ALFALFA_Legacy/wiki/ALFALFA-Grid-Access).
 
-```{code-cell} ipython3
+```python
 #Define the path to the data
 #You should already have run the data download script
 cwd = os.getcwd()+'/'
 data_path = cwd+'../data/A2010/pipeline.unknown_date/'
 ```
 
-```{code-cell} ipython3
+```python
 #Define the grid you are using
 grid_ra = '1044'
 grid_dec = '13'
@@ -51,12 +53,12 @@ freq_slice = 'a'
 cube, freq, vel, grid_wcs, header = load_grid(data_path,grid_ra,grid_dec,freq_slice)
 ```
 
-```{code-cell} ipython3
+```python
 #Average together the two polarizations
 cube = numpy.mean(cube,axis=0)
 ```
 
-```{code-cell} ipython3
+```python
 #Identify a line-free channel that is mostly just noise to estimate the rms from
 chan = 300
 
@@ -68,7 +70,7 @@ print(f'RMS noise = {rms} mJy/beam')
 plt.imshow(cube[chan],origin='lower')
 ```
 
-```{code-cell} ipython3
+```python
 #Make a simple moment zero map over a select channel range
 min_chan = 0
 max_chan = 550
@@ -88,14 +90,14 @@ plt.imshow(mom0,origin='lower')
 
 To give the moment zero map more physical units we should also multiply it by the width of a channel. This could be done simply in frequency to give units of Jy Hz / beam, but we will instead make the units Jy km/s / beam.
 
-```{code-cell} ipython3
+```python
 #Find the average channel width over the range used for the moment map
 #Technically you should do this channel by channel, but this is close enough
 chan_dv = numpy.mean(vel[min_chan:max_chan-1]-vel[min_chan+1:max_chan])
 print(f'Channel width = {chan_dv}')
 ```
 
-```{code-cell} ipython3
+```python
 #Now multiply the moment zero map by the channel width and divide by 1000 to get Jy.km/s
 mom0_Jykms = mom0*chan_dv.value/1000
 ```
@@ -104,7 +106,7 @@ mom0_Jykms = mom0*chan_dv.value/1000
 
 Now we need to decide on the dimensions that we want for our DECaLS image, build a WCS for it, and download the image. Then we need to reproject the moment zero map to the same dimensions as the DECaLS image and overlay them.
 
-```{code-cell} ipython3
+```python
 #Set the image size in pixels
 n_pix = 1024
 
@@ -118,7 +120,7 @@ center_dec = grid_dec
 center_pos = SkyCoord(center_ra,center_dec,unit='deg')
 ```
 
-```{code-cell} ipython3
+```python
 #Sets the DECaLS URL to pull both the fits and jpeg image from
 fits_url = f"https://www.legacysurvey.org/viewer/cutout.fits?ra={center_pos.ra.deg}&dec={center_pos.dec.deg}&layer=ls-dr10&pixscale={pixscale*3600.}&width={x_wid}&height={y_wid}&bands=g"
 fits_head = fits.getheader(fits_url)
@@ -131,12 +133,12 @@ DECaLS_projection = WCS(fits_head)
 urllib.request.urlretrieve(DECaLS_url, f'{grid_ra}+{grid_dec}_DECaLS.jpeg')
 ```
 
-```{code-cell} ipython3
+```python
 plt.imshow(mom0_Jykms,origin='lower')
 plt.colorbar()
 ```
 
-```{code-cell} ipython3
+```python
 #Finally make the overlay
 
 #Open the DECaLS jpeg that we downloaded
@@ -158,17 +160,17 @@ plt.ylabel('Dec')
 
 In the original example grid (1044+13a) there is a clear artifact near the center of the FoV. This can easily be removed by using the accompanying weights cube. Note that the weighting has already been applied to the flux scale in the data cube and that the numerical scale of the weights is aritrary. Thus, the weights should be used to scale/weight the data as this will make the flux scale non-physical. However, they can be used to mask regions of the data.
 
-```{code-cell} ipython3
+```python
 #Use the load_grid function again, but now also load the weights cube
 cube, freq, vel, grid_wcs, header, wgt_cube, wgt_header = load_grid(data_path,'1044','13','a',include_weights=True)
 ```
 
-```{code-cell} ipython3
+```python
 #Plot an example of the weight
 plt.imshow(wgt_cube[0][200],origin='lower')
 ```
 
-```{code-cell} ipython3
+```python
 #Calculate the maximum weight value
 wgt_max = max(wgt_cube.flatten())
 print(wgt_max)
@@ -192,7 +194,7 @@ mom0 = numpy.sum(blanked_cube, axis = 0)
 mom0_Jykms = mom0*chan_dv.value/1000
 ```
 
-```{code-cell} ipython3
+```python
 #If you would like the plot to appear in a seperate, interactive window please uncomment the line below.
 #%matplotlib tk
 
@@ -200,7 +202,7 @@ mom0_Jykms = mom0*chan_dv.value/1000
 #%matplotlib inline
 ```
 
-```{code-cell} ipython3
+```python
 #Finally make the overlay
 
 #Open the DECaLS jpeg that we downloaded

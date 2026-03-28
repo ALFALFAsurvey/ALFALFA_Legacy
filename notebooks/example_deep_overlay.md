@@ -1,18 +1,20 @@
 ---
-jupytext:
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.19.1
-  formats: ipynb,md:myst
-kernelspec:
-  display_name: Python 3 (ipykernel)
-  language: python
-  name: python3
+jupyter:
+  jupytext:
+    default_lexer: ipython3
+    formats: ipynb,md
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.19.1
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
-```{code-cell} ipython3
+```python
 import os, sys, glob
 import copy
 import numpy as np
@@ -33,7 +35,7 @@ from PIL import Image
 
 # Functions
 
-```{code-cell} ipython3
+```python
 def fits_header_clean(header, apply_version=None):
     
     header_new = copy.deepcopy(header)
@@ -105,7 +107,7 @@ def fits_header_clean(header, apply_version=None):
     return header_new
 ```
 
-```{code-cell} ipython3
+```python
 # Function to average the two polarizations together and return a fits HDU object with the same header
 def avg_pol(hdu):
     new_data = np.nanmean(hdu.data, axis=0, keepdims=True)
@@ -118,7 +120,7 @@ def avg_pol(hdu):
     return new_hdu
 ```
 
-```{code-cell} ipython3
+```python
 def make_vel(header):
     wcs_use = WCS(header)
     freq_arr= wcs_use.spectral.array_index_to_world(range(wcs_use.spectral.array_shape[0]))
@@ -130,7 +132,7 @@ def make_vel(header):
     return vel_arr
 ```
 
-```{code-cell} ipython3
+```python
 def mask_gal(hdu, gal_vel=500*u.km/u.s):
     # build vhel array
     vel_arr = make_vel(hdu.header)
@@ -140,7 +142,7 @@ def mask_gal(hdu, gal_vel=500*u.km/u.s):
     return gal_mask[None, :, None, None]
 ```
 
-```{code-cell} ipython3
+```python
 def make_mask_arr(hdu, mask=None):
     mask_arr = np.ones(hdu.data.shape, dtype=float)
     if mask is not None:
@@ -149,7 +151,7 @@ def make_mask_arr(hdu, mask=None):
     return mask_arr
 ```
 
-```{code-cell} ipython3
+```python
 def mask_weight(weight_hdu, threshold=0.75):
     # normalize weight cube
     weight_map_max = np.nanmax(weight_hdu.data, axis=1, keepdims=True)
@@ -160,7 +162,7 @@ def mask_weight(weight_hdu, threshold=0.75):
     return wt_mask
 ```
 
-```{code-cell} ipython3
+```python
 def map_noise(hdu, mask=None, method="mad"):
     """
     method: 'mad' using median_abs_deviation, or 'std' using standard deviation
@@ -183,7 +185,7 @@ def map_noise(hdu, mask=None, method="mad"):
     return new_hdu
 ```
 
-```{code-cell} ipython3
+```python
 def mask_rms(hdu, threshold=2*2.33*u.mJy/u.beam, use_map_noise=False, mask=None, method="mad"):
     """
     param use_map_noise: if True, map_noise will be called, and threshold * noise_map 
@@ -202,7 +204,7 @@ def mask_rms(hdu, threshold=2*2.33*u.mJy/u.beam, use_map_noise=False, mask=None,
     return rms_mask
 ```
 
-```{code-cell} ipython3
+```python
 def kern_smooth(hdu, kern, mask=None, conv_kwargs={}):
     new_data = np.empty_like(hdu.data)
     conv_kwargs_use = {"normalize_kernel": True, 
@@ -229,7 +231,7 @@ def kern_smooth(hdu, kern, mask=None, conv_kwargs={}):
     return new_hdu
 ```
 
-```{code-cell} ipython3
+```python
 def make_psf(header, ch_fwhm=2, bmaj_scale=1, bmin_scale=1):
     freq_psf = Gaussian1DKernel(ch_fwhm/2.355)
     dec_psf = Gaussian1DKernel(abs(header["BMAJ"]*bmaj_scale/header["CDELT2"])/2.355)
@@ -242,7 +244,7 @@ def make_psf(header, ch_fwhm=2, bmaj_scale=1, bmin_scale=1):
     return psf_arr
 ```
 
-```{code-cell} ipython3
+```python
 def map_mom(hdu, mom=0, mask=None, ):
     # initialize mask array
     mask_arr = make_mask_arr(hdu, mask=mask)
@@ -273,7 +275,7 @@ def map_mom(hdu, mom=0, mask=None, ):
     return mom_map
 ```
 
-```{code-cell} ipython3
+```python
 def ppl_src_mask(hdu, ch_smooth_list=[0, 2, 4], rms_thre_list=[5, 8, 15], 
                  mask=None, method="mad", min_occur=2):
     src_mask = make_mask_arr(hdu, None) * 0
@@ -308,12 +310,12 @@ def ppl_src_mask(hdu, ch_smooth_list=[0, 2, 4], rms_thre_list=[5, 8, 15],
 
 # Read in data
 
-```{code-cell} ipython3
+```python
 # Read in A100 catalog
 a100_tb = Tb.read("https://content.cld.iop.org/journals/0004-637X/861/1/49/revision1/apjaac956t2_mrt.txt", format="ascii.mrt")
 ```
 
-```{code-cell} ipython3
+```python
 src_coord_list = SkyCoord(ra=["%ih%im%fs" % (rah, ram, ras) for (rah, ram, ras)
                               in zip(a100_tb["HIRAh"], a100_tb["HIRAm"], a100_tb["HIRAs"])], 
                           dec=["%s%id%im%fs" % (design, ded, dem, des) for (design, ded, dem, des)
@@ -322,13 +324,13 @@ src_coord_list = SkyCoord(ra=["%ih%im%fs" % (rah, ram, ras) for (rah, ram, ras)
 
 Read in the grid file, will try to read in all fits (a-d) for the input RA and Dec. We demonstrate here the 1244+33 grid which contains the NGC 4631 group, known to display large scale tidal features (e.g. [Wang+23](https://ui.adsabs.harvard.edu/abs/2023ApJ...944..102W/abstract)).
 
-```{code-cell} ipython3
+```python
 grid_path = "../data/A2010/pipeline.unknown_date/"
 grid_ra = '1044'
 grid_dec = '13'
 ```
 
-```{code-cell} ipython3
+```python
 # Read in the data cube
 grid_hdu_list, wgts_hdu_list = [], []
 for suffix in ("a", "b", "c", "d"):
@@ -340,12 +342,12 @@ for suffix in ("a", "b", "c", "d"):
         print(f'{fits_file} does not exist')
 ```
 
-```{code-cell} ipython3
+```python
 # reference sky coordina
 alfalfa_wcs = WCS(fits_header_clean(grid_hdu_list[0]["PRIMARY"].header)).celestial
 ```
 
-```{code-cell} ipython3
+```python
 #Set the image size in pixels
 n_pix = 1024
 
@@ -359,7 +361,7 @@ center_pos = alfalfa_wcs.celestial.array_index_to_world(
     np.median(range(alfalfa_wcs.celestial.pixel_shape[-2])))
 ```
 
-```{code-cell} ipython3
+```python
 #Sets the DECaLS URL to pull both the fits and jpeg image from
 fits_url = f"https://www.legacysurvey.org/viewer/cutout.fits?ra={center_pos.ra.deg}&dec={center_pos.dec.deg}&layer=ls-dr10&pixscale={pixscale*3600.}&width={x_wid}&height={y_wid}&bands=g"
 fits_head = fits.getheader(fits_url)
@@ -374,11 +376,10 @@ urllib.request.urlretrieve(DECaLS_url, f'{grid_ra}+{grid_dec}_DECaLS.jpeg')
 
 # All grids
 
-+++
 
 Running the multi-scale 3d source finding. Note that it might take 10-20 minutes depending on the computational power of your machine.
 
-```{code-cell} ipython3
+```python
 mom0_all = None
 for i in range(4):
     hdu_use = grid_hdu_list[i]["PRIMARY"]
@@ -400,7 +401,7 @@ for i in range(4):
         mom0_all.data += mom0_map.data
 ```
 
-```{code-cell} ipython3
+```python
 # convert ALFALFA table coordinates for image coordinates
 src_xy = DECaLS_projection.world_to_pixel(src_coord_list)
 use_flag = np.isfinite(src_xy[0]) & np.isfinite(src_xy[1]) & \
@@ -408,7 +409,7 @@ use_flag = np.isfinite(src_xy[0]) & np.isfinite(src_xy[1]) & \
 (src_xy[1] >= -0.5) & (src_xy[1] <= DECaLS_projection.pixel_shape[-2]-0.5)
 ```
 
-```{code-cell} ipython3
+```python
 #If you want the plot to display in a separate, interactive window uncomment the following command
 #%matplotlib tk
 
@@ -416,7 +417,7 @@ use_flag = np.isfinite(src_xy[0]) & np.isfinite(src_xy[1]) & \
 #%matplotlib inline
 ```
 
-```{code-cell} ipython3
+```python
 #Finally make the overlay
 
 #Open the DECaLS jpeg that we downloaded
