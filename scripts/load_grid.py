@@ -104,7 +104,7 @@ def fits_header_clean(header, grid_ra, grid_dec, apply_version=None):
     
     return header_new
 
-def load_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=False):
+def load_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=False, sciserver=True):
     '''
     This function loads the requested ALFALFA grid and applies corrections to
     the header keywords and an approximate fix for the world coordinate system.
@@ -116,6 +116,7 @@ def load_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=False):
     grid_dec: (String) Declination of the grid to be loaded, e.g., "13".
     freq_slice: (String) Frequency slice of the ALFALFA data, e.g., "a", "b", "c", or "d".
     include_weights: (Bool) Return weights cube as well as data (optional).
+    sciserver: (Bool) Use the filename conventions for SciServer data set.
 
     OUTPUTS:
     cube: (Array) Data cube.
@@ -127,7 +128,10 @@ def load_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=False):
     (Optional) weights_header: (Header Object) FITS header of the weights cube.
     '''
 
-    grid_filename = f'{dir_path}{grid_ra}+{grid_dec}{freq_slice}_spectral.fits'
+    grid_filename = f'{dir_path}{grid_ra}+{grid_dec}{freq_slice}_spectral'
+    if sciserver:
+        grid_filename += '_v2'
+    grid_filename += '.fits'
 
     #Open the fits file
     hdu = fits.open(grid_filename)
@@ -147,8 +151,11 @@ def load_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=False):
                   doppler_rest=rest_freq, doppler_convention="optical")
     
     if include_weights:
-        wgts_filename = f'{dir_path}{grid_ra}+{grid_dec}{freq_slice}_spectralweights.fits'
-        
+        wgts_filename = f'{dir_path}{grid_ra}+{grid_dec}{freq_slice}_spectralweights'
+        if sciserver:
+            wgts_filename += '_v2'
+        wgts_filename += '.fits'
+
         #Open the fits file
         wgts_hdu = fits.open(wgts_filename)
     
@@ -163,7 +170,7 @@ def load_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=False):
     else:
         return cube, freq, vel, grid_wcs, new_header
 
-def load_cont_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=False):
+def load_cont_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=False, sciserver=True):
     '''
     This function loads an ALFALFA continuum grid and applies corrections to
     the header keywords and an approximate fix for the world coordinate system.
@@ -175,6 +182,7 @@ def load_cont_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=Fals
     grid_dec: (String) Declination of the grid to be loaded, e.g., "13".
     freq_slice: (String) Frequency slice of the ALFALFA data, e.g., "a", "b", "c", or "d".
     include_weights: (Bool) Return weights cube as well as data (optional).
+    sciserver: (Bool) Use the filename conventions for SciServer data set.
 
     OUTPUTS:
     grid: (Array) Continuum grid.
@@ -184,7 +192,10 @@ def load_cont_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=Fals
     (Optional) weights_header: (Header Object) FITS header of the weights cube.
     '''
 
-    grid_filename = f'{dir_path}{grid_ra}+{grid_dec}{freq_slice}_continuum.fits'
+    grid_filename = f'{dir_path}{grid_ra}+{grid_dec}{freq_slice}_continuum'
+    if sciserver:
+        grid_filename += '_v2'
+    grid_filename += '.fits'
 
     #Open the fits file
     hdu = fits.open(grid_filename)
@@ -200,7 +211,10 @@ def load_cont_grid(dir_path, grid_ra, grid_dec, freq_slice, include_weights=Fals
     grid_wcs = WCS(new_header)
     
     if include_weights:
-        wgts_filename = f'{dir_path}{grid_ra}+{grid_dec}{freq_slice}_continuumweights.fits'
+        wgts_filename = f'{dir_path}{grid_ra}+{grid_dec}{freq_slice}_continuumweights'
+        if sciserver:
+            wgts_filename += '_v2'
+        wgts_filename += '.fits'
         
         #Open the fits file
         wgts_hdu = fits.open(wgts_filename)
